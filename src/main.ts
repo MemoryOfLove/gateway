@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
+import { ValidationPipe, VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { HttpExceptionFilter } from './common/exceptions/http.exception.filter';
+
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -25,6 +26,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   //创建文档
   generateDocument(app)
+  // 启动全局字段校验，保证请求接口字段校验正确。
+  app.useGlobalPipes(new ValidationPipe());
+
   //热更新
   if (module.hot) {
     module.hot.accept();
